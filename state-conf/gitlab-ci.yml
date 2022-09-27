@@ -1,0 +1,48 @@
+stages:
+  - validate
+  - plan
+  - apply
+  - destroy
+image:
+  name: hashicorp/terraform:light
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+before_script:
+  
+  - rm -rf .terraform
+  - terraform --version
+  # - terraform init -backend-config="access_key=${TF_VAR_AWS_ACCESS_KEY_ID}" -backend-config="secret_key=${TF_VAR_AWS_SECRET_ACCESS_KEY}" -backend-config="region=us-west-2"
+  - terraform init
+  - apk add --no-cache python3 py3-pip
+  - pip install awscli
+  - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  - aws configure set region "us-west-2"
+  - aws sts get-caller-identity 
+validate:
+  stage: validate
+  script:
+    - terraform validate
+plan:
+  stage: plan
+  script:
+    - terraform plan -out "tfplan"
+  dependencies:
+    - validate
+  artifacts:
+    paths:
+      - tfplan
+apply:
+  stage: apply
+  script:
+    - terraform apply -input=false "tfplan"
+  dependencies:
+    - plan
+  when: manual
+destroy:
+  stage: destroy
+  script:
+    - terraform destroy --auto-approve
+  when: manual
+

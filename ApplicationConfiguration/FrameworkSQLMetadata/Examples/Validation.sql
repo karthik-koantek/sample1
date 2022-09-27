@@ -1,0 +1,32 @@
+/*
+This script has 2 example stages, both of which need some setup prior to enabling.
+
+Platinum Zone Validation:
+    * used for a blue/green deployment of a data lake upgrade.  Update the "../OrchestrationValidate Platinum Zone" notebook to point to the 2 databases to be compared.
+    * assumes that a platinum zone exists and that there are databases that need to be compared (e.g. 2 environnments with the same identical sources)
+    * use the Power BI report "Platinum Zone Validation" to review the results
+
+Validation:
+    * used as a validation phase gate for a data pipeline, to apply unit tests to specific tables, views, and queries and assert whether they:
+         (1) exist,
+         (2) return the expected columns,
+         (3) have at least a certain number of new or modified rows in the last 2 and/or 6 days.
+    * Run the "../Data Engineering/Metadata/Generate Metadata for Validation" notebook to generate an as-is state of the data lake (and adjust as necessary).  This will need to be run once for each catalog and type (View, Table)
+    * Download the results of the above operation (data exported to gold zone export path), and paste the contents into a new hydration script (saved under FrameworkSQLMetadata directory in the repo)
+    * Add lines below to run for each catalog, following the pattern shown below.
+    * Results are saved to MLFlow and the Accelerator DB.  I would suggest that the DV Catalyst Power BI file should be updated with a new tab to show these validation results/reporting.
+*/
+
+--DECLARE @Parameters Parameters;
+--INSERT @Parameters(ParameterName, ParameterValue)
+--SELECT 'externalSystem' AS ParameterName, 'internalgreen' AS ParameterValue;
+--EXEC [dbo].[HydrateGenericNotebook] @ProjectName = 'Validation', @SystemName = 'Platinum Zone Validation', @SystemSecretScope = 'dwdb', @SystemIsActive = 1, @SystemOrder = 10, @StageName = 'Platinum Zone Validation Daily', @StageIsActive = 1, @StageOrder = 10, @JobName = 'Validate_Platinum_Zone', @JobIsActive = 1, @JobOrder = 10, @Parameters=@Parameters, @NotebookPath = '../Orchestration/Validate Platinum Zone';
+--EXEC [dbo].[HydrateGoldZone] @ProjectName = 'Validation', @SystemName = 'Platinum Zone Validation', @SystemSecretScope = 'internal', @SystemIsActive = 1, @SystemOrder = 10, @StageName = 'Platinum Zone Validation Gold Zone', @StageIsActive = 1, @StageOrder = 20, @JobName = 'Validate_Platinum_Zone_GoldZone_QA_Tables_Not_In_Prod', @JobOrder = 10, @JobIsActive = 1, @ViewName = 'silvergeneral.qaTablesNotInProd', @TableName = 'goldgeneral.qaTablesNotInProd', @Purpose = 'validation', @PrimaryKeyColumns = 'fullyQualifiedTableName ', @LoadType = 'MergeType2', @DeleteNotInSource = 'true', @Destination = 'goldgeneral', @GoldZoneNotebookPath = '../Data Engineering/Gold Zone/Gold Load';
+--EXEC [dbo].[HydrateGoldZone] @ProjectName = 'Validation', @SystemName = 'Platinum Zone Validation', @SystemSecretScope = 'internal', @SystemIsActive = 1, @SystemOrder = 10, @StageName = 'Platinum Zone Validation Gold Zone', @StageIsActive = 1, @StageOrder = 20, @JobName = 'Validate_Platinum_Zone_GoldZone_Prod_Tables_Not_In_QA', @JobOrder = 10, @JobIsActive = 1, @ViewName = 'silvergeneral.prodTablesNotInQA', @TableName = 'goldgeneral.prodTablesNotInQA', @Purpose = 'validation', @PrimaryKeyColumns = 'fullyQualifiedTableName ', @LoadType = 'MergeType2', @DeleteNotInSource = 'true', @Destination = 'goldgeneral', @GoldZoneNotebookPath = '../Data Engineering/Gold Zone/Gold Load';
+--EXEC [dbo].[HydrateGoldZone] @ProjectName = 'Validation', @SystemName = 'Platinum Zone Validation', @SystemSecretScope = 'internal', @SystemIsActive = 1, @SystemOrder = 10, @StageName = 'Platinum Zone Validation Gold Zone', @StageIsActive = 1, @StageOrder = 20, @JobName = 'Validate_Platinum_Zone_GoldZone_CommonTableComparison', @JobOrder = 10, @JobIsActive = 1, @ViewName = 'goldgeneral.vCommonTableComparison', @TableName = 'goldgeneral.commonTableComparison', @Purpose = 'validation', @PrimaryKeyColumns = 'fullyQualifiedTableName ', @LoadType = 'MergeType2', @DeleteNotInSource = 'true', @Destination = 'goldgeneral', @GoldZoneNotebookPath = '../Data Engineering/Gold Zone/Gold Load';
+--EXEC [dbo].[HydrateGoldZone] @ProjectName = 'Validation', @SystemName = 'Platinum Zone Validation', @SystemSecretScope = 'internal', @SystemIsActive = 1, @SystemOrder = 10, @StageName = 'Platinum Zone Validation Gold Zone', @StageIsActive = 1, @StageOrder = 20, @JobName = 'Validate_Platinum_Zone_GoldZone_CommonTableComparisonHistory', @JobOrder = 10, @JobIsActive = 1, @ViewName = 'goldgeneral.vCommonTableComparisonHistory', @TableName = 'goldgeneral.commonTableComparisonHistory', @Purpose = 'validation', @PrimaryKeyColumns = 'effectiveDate,fullyQualifiedTableName ', @LoadType = 'Overwrite', @DeleteNotInSource = 'false', @Destination = 'goldgeneral', @GoldZoneNotebookPath = '../Data Engineering/Gold Zone/Gold Load';
+--
+--UPDATE dbo.Stage SET NumberOfThreads = 4 WHERE StageName = 'Platinum Zone Validation Gold Zone';
+--EXEC [dbo].[HydratePipelineValidation] @ProjectName = 'Validation', @SystemName = 'Validation', @SystemSecretScope = 'internal', @SystemIsActive = 0, @SystemOrder = 20, @StageName = 'Transform Validation Daily', @StageIsActive = 1, @StageOrder = 10, @JobName = 'Transform Validation default catalog', @JobOrder = 10, @JobIsActive = 1, @ExperimentName = 'default catalog', @DatabaseCatalog = 'default', @ThreadPool = 2, @TimeoutSeconds = 18000, @NotebookPath = '../Orchestration/Validate Pipeline';
+--EXEC [dbo].[HydratePipelineValidation] @ProjectName = 'Validation', @SystemName = 'Validation', @SystemSecretScope = 'internal', @SystemIsActive = 0, @SystemOrder = 20, @StageName = 'Transform Validation Daily', @StageIsActive = 1, @StageOrder = 10, @JobName = 'Transform Validation archive catalog', @JobOrder = 10, @JobIsActive = 0, @ExperimentName = 'archive catalog', @DatabaseCatalog = 'archive', @ThreadPool = 2, @TimeoutSeconds = 18000, @NotebookPath = '../Orchestration/Validate Pipeline';
+--EXEC [dbo].[HydratePipelineValidation] @ProjectName = 'Validation', @SystemName = 'Validation', @SystemSecretScope = 'internal', @SystemIsActive = 0, @SystemOrder = 20, @StageName = 'Transform Validation Daily', @StageIsActive = 1, @StageOrder = 10, @JobName = 'Transform Validation silvergeneral catalog', @JobOrder = 10, @JobIsActive = 0, @ExperimentName = 'silvergeneral catalog', @DatabaseCatalog = 'silvergeneral', @ThreadPool = 2, @TimeoutSeconds = 18000, @NotebookPath = '../Orchestration/Validate Pipeline';

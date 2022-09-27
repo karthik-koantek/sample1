@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.Azure.Kusto.Tools</id>
+    <version>3.1.0</version>
+    <title>Microsoft.Azure.Kusto Tools</title>
+    <authors>Microsoft</authors>
+    <owners>microsoft,microsoft_kusto</owners>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <licenseUrl>https://kusto.blob.core.windows.net/kusto-nuget/EULA-agreement.htm</licenseUrl>
+    <projectUrl>https://aka.ms/kdocs</projectUrl>
+    <iconUrl>https://go.microsoft.com/fwlink/?LinkID=288890</iconUrl>
+    <description>Client tools for ingesting and querying data with Kusto service.</description>
+    <releaseNotes>3.1.0 - Upgrade Newtonsoft.Json to version 11.0.2. Upgrade dSTS AL to version 3.0.2.207</releaseNotes>
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>kusto</tags>
+  </metadata>
+</package>

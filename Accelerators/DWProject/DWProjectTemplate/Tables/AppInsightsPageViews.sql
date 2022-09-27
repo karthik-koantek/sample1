@@ -1,0 +1,22 @@
+﻿CREATE TABLE [dbo].[AppInsightsPageViews]
+(
+	 [SK] BIGINT NOT NULL IDENTITY(1,1)
+	,[ContextSessionId] VARCHAR(20) NOT NULL
+	,[Tool] VARCHAR(20) NOT NULL
+	,[Date] DATE NOT NULL
+	,[UserID] UNIQUEIDENTIFIER NOT NULL
+	,[RoleID] UNIQUEIDENTIFIER NOT NULL
+	,[SegmentID] UNIQUEIDENTIFIER NOT NULL
+	,[City] VARCHAR(100) NOT NULL
+	,[Country] VARCHAR(100) NOT NULL
+	,[Province] VARCHAR(100) NOT NULL
+	,[ViewName] VARCHAR(200) NOT NULL
+	,[ViewUrl] VARCHAR(1000) NOT NULL
+	,[ViewUrlDataHost] VARCHAR(50) NOT NULL
+	,[Count] BIGINT NOT NULL CONSTRAINT DF_dbo_AppInsightsPageViews_Count DEFAULT(0)
+)
+GO
+ALTER TABLE dbo.AppInsightsPageViews ADD CONSTRAINT PK_CIX_dbo_AppInsightsPageViews PRIMARY KEY CLUSTERED([SK]);
+GO
+CREATE NONCLUSTERED INDEX IX_dbo_AppInsightsPageViews_Date ON dbo.AppInsightsPageViews ([Date]);
+

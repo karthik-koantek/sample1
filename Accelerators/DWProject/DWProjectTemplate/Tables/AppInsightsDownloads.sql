@@ -1,0 +1,20 @@
+﻿CREATE TABLE [dbo].[AppInsightsDownloads]
+(
+	 [SK] BIGINT NOT NULL IDENTITY(1,1)
+	,[Tool] VARCHAR(20) NOT NULL
+	,[ContextSessionId] VARCHAR(20) NOT NULL
+	,[Date] DATE NOT NULL
+	,[UserID] UNIQUEIDENTIFIER NOT NULL
+	,[RoleID] UNIQUEIDENTIFIER NOT NULL
+	,[SegmentID] UNIQUEIDENTIFIER NOT NULL
+	,[City] VARCHAR(100) NOT NULL
+	,[Country] VARCHAR(100) NOT NULL
+	,[Province] VARCHAR(100) NOT NULL
+	,[Url] VARCHAR(1000) NOT NULL
+	,[ActionType] CHAR(9) NOT NULL
+	,[Count] BIGINT NOT NULL CONSTRAINT DF_dbo_AppInsightsDownloads_Count DEFAULT(0)
+)
+GO
+ALTER TABLE dbo.AppInsightsDownloads ADD CONSTRAINT PK_CIX_dbo_AppInsightsDownloads PRIMARY KEY CLUSTERED([SK]);
+GO
+CREATE NONCLUSTERED INDEX IX_dbo_AppInsightsDownloads_Date ON dbo.AppInsightsDownloads ([Date]);

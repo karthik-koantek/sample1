@@ -1,0 +1,13 @@
+﻿CREATE TABLE [dbo].[Project]
+(
+	 ProjectKey SMALLINT NOT NULL IDENTITY(1,1)
+	,ProjectName VARCHAR(255) NOT NULL
+	,CreatedDate DATETIME2 NOT NULL CONSTRAINT DF_dbo_Project_CreatedDate DEFAULT(SYSDATETIME())
+);
+GO
+ALTER TABLE dbo.Project ADD CONSTRAINT PK_CIX_dbo_Project PRIMARY KEY CLUSTERED (ProjectKey);
+GO
+CREATE UNIQUE NONCLUSTERED INDEX UIX_dbo_Project_ProjectName ON dbo.Project (ProjectName);
+GO
+
+

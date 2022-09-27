@@ -1,0 +1,475 @@
+{
+    "fields": [
+        {
+            "metadata": {},
+            "name": "context",
+            "nullable": true,
+            "type": {
+                "fields": [
+                    {
+                        "metadata": {},
+                        "name": "application",
+                        "nullable": true,
+                        "type": {
+                            "fields": [
+                                {
+                                    "metadata": {},
+                                    "name": "version",
+                                    "nullable": true,
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "struct"
+                        }
+                    },
+                    {
+                        "metadata": {},
+                        "name": "custom",
+                        "nullable": true,
+                        "type": {
+                            "fields": [
+                                {
+                                    "metadata": {},
+                                    "name": "dimensions",
+                                    "nullable": true,
+                                    "type": {
+                                        "containsNull": true,
+                                        "elementType": {
+                                            "fields": [
+                                                {
+                                                    "metadata": {},
+                                                    "name": "AspNetCoreEnvironment",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "Dependency.Success",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "Dependency.Type",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "Request.Success",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "_MS.AggregationIntervalMs",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "_MS.IsAutocollected",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "_MS.MetricId",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "appSrv_ResourceGroup",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "appSrv_SiteName",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "appSrv_wsHost",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "appSrv_wsOwner",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "appSrv_wsStamp",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "baseSdkTargetFramework",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "osType",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "processSessionId",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "runtimeFramework",
+                                                    "nullable": true,
+                                                    "type": "string"
+                                                }
+                                            ],
+                                            "type": "struct"
+                                        },
+                                        "type": "array"
+                                    }
+                                },
+                                {
+                                    "metadata": {},
+                                    "name": "metrics",
+                                    "nullable": true,
+                                    "type": {
+                                        "containsNull": true,
+                                        "elementType": {
+                                            "fields": [
+                                                {
+                                                    "metadata": {},
+                                                    "name": "Dependency duration",
+                                                    "nullable": true,
+                                                    "type": {
+                                                        "fields": [
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "count",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "max",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "min",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "sampledValue",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "stdDev",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "sum",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "value",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            }
+                                                        ],
+                                                        "type": "struct"
+                                                    }
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "HeartbeatState",
+                                                    "nullable": true,
+                                                    "type": {
+                                                        "fields": [
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "count",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "max",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "min",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "sampledValue",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "stdDev",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "sum",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "value",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            }
+                                                        ],
+                                                        "type": "struct"
+                                                    }
+                                                },
+                                                {
+                                                    "metadata": {},
+                                                    "name": "Server response time",
+                                                    "nullable": true,
+                                                    "type": {
+                                                        "fields": [
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "count",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "max",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "min",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "sampledValue",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "stdDev",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "sum",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            },
+                                                            {
+                                                                "metadata": {},
+                                                                "name": "value",
+                                                                "nullable": true,
+                                                                "type": "double"
+                                                            }
+                                                        ],
+                                                        "type": "struct"
+                                                    }
+                                                }
+                                            ],
+                                            "type": "struct"
+                                        },
+                                        "type": "array"
+                                    }
+                                }
+                            ],
+                            "type": "struct"
+                        }
+                    },
+                    {
+                        "metadata": {},
+                        "name": "data",
+                        "nullable": true,
+                        "type": {
+                            "fields": [
+                                {
+                                    "metadata": {},
+                                    "name": "eventTime",
+                                    "nullable": true,
+                                    "type": "string"
+                                },
+                                {
+                                    "metadata": {},
+                                    "name": "isSynthetic",
+                                    "nullable": true,
+                                    "type": "boolean"
+                                },
+                                {
+                                    "metadata": {},
+                                    "name": "samplingRate",
+                                    "nullable": true,
+                                    "type": "double"
+                                },
+                                {
+                                    "metadata": {},
+                                    "name": "syntheticSource",
+                                    "nullable": true,
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "struct"
+                        }
+                    },
+                    {
+                        "metadata": {},
+                        "name": "device",
+                        "nullable": true,
+                        "type": {
+                            "fields": [
+                                {
+                                    "metadata": {},
+                                    "name": "roleInstance",
+                                    "nullable": true,
+                                    "type": "string"
+                                },
+                                {
+                                    "metadata": {},
+                                    "name": "roleName",
+                                    "nullable": true,
+                                    "type": "string"
+                                },
+                                {
+                                    "metadata": {},
+                                    "name": "type",
+                                    "nullable": true,
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "struct"
+                        }
+                    },
+                    {
+                        "metadata": {},
+                        "name": "location",
+                        "nullable": true,
+                        "type": {
+                            "fields": [
+                                {
+                                    "metadata": {},
+                                    "name": "clientip",
+                                    "nullable": true,
+                                    "type": "string"
+                                },
+                                {
+                                    "metadata": {},
+                                    "name": "continent",
+                                    "nullable": true,
+                                    "type": "string"
+                                },
+                                {
+                                    "metadata": {},
+                                    "name": "country",
+                                    "nullable": true,
+                                    "type": "string"
+                                },
+                                {
+                                    "metadata": {},
+                                    "name": "province",
+                                    "nullable": true,
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "struct"
+                        }
+                    },
+                    {
+                        "metadata": {},
+                        "name": "session",
+                        "nullable": true,
+                        "type": {
+                            "fields": [
+                                {
+                                    "metadata": {},
+                                    "name": "isFirst",
+                                    "nullable": true,
+                                    "type": "boolean"
+                                }
+                            ],
+                            "type": "struct"
+                        }
+                    }
+                ],
+                "type": "struct"
+            }
+        },
+        {
+            "metadata": {},
+            "name": "internal",
+            "nullable": true,
+            "type": {
+                "fields": [
+                    {
+                        "metadata": {},
+                        "name": "data",
+                        "nullable": true,
+                        "type": {
+                            "fields": [
+                                {
+                                    "metadata": {},
+                                    "name": "documentVersion",
+                                    "nullable": true,
+                                    "type": "string"
+                                },
+                                {
+                                    "metadata": {},
+                                    "name": "id",
+                                    "nullable": true,
+                                    "type": "string"
+                                }
+                            ],
+                            "type": "struct"
+                        }
+                    }
+                ],
+                "type": "struct"
+            }
+        },
+        {
+            "metadata": {},
+            "name": "metric",
+            "nullable": true,
+            "type": {
+                "containsNull": true,
+                "elementType": "string",
+                "type": "array"
+            }
+        }
+    ],
+    "type": "struct"
+}

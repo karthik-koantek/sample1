@@ -1,0 +1,45 @@
+{
+    "email_notifications": {},
+    "name": "Pipeline",
+    "max_concurrent_runs": 1,
+    "tasks": [
+        {
+            "existing_cluster_id": "0827-174330-becks791",
+            "notebook_task": {
+                "notebook_path": "/Framework/Orchestration/Run ADF Project",
+                "base_parameters": {
+                    "ADF Project Name": "UAT_ADF_SQL"
+                }
+            },
+            "email_notifications": {},
+            "task_key": "ADFIngestToTransientZone"
+        },
+        {
+            "existing_cluster_id": "0827-174330-becks791",
+            "notebook_task": {
+                "notebook_path": "/Users/d.patel@reply.com/test"
+            },
+            "email_notifications": {},
+            "task_key": "DLTIngestDataFromTransientToBronzeSilver",
+            "depends_on": [
+                {
+                    "task_key": "ADFIngestToTransientZone"
+                }
+            ]
+        },
+        {
+            "existing_cluster_id": "0827-174330-becks791",
+            "notebook_task": {
+                "notebook_path": "/Framework/Orchestration/Orchestration",
+                "base_parameters": {}
+            },
+            "email_notifications": {},
+            "task_key": "DVCLoadToGoldZone",
+            "depends_on": [
+                {
+                    "task_key": "DLTIngestDataFromTransientToBronzeSilver"
+                }
+            ]
+        }
+    ]
+}

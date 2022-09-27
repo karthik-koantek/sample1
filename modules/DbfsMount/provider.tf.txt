@@ -1,0 +1,4 @@
+provider "databricks" {
+  host  = var.host
+  token = var.token
+}
