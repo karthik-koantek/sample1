@@ -1,0 +1,105 @@
+param
+(
+    [Parameter(Mandatory = $true, Position = 1)]
+    [string]$URIBase,
+    [Parameter(Mandatory = $true, Position = 2)]
+    [securestring]$Token,
+    [Parameter(Mandatory = $true, Position = 3)]
+    [string]$NotebookDirectory,
+    [Parameter(Mandatory = $true, Position = 4)]
+    [string]$DeployDatabricksNotebooks,
+    [Parameter(Mandatory = $true, Position = 4)]
+    [string]$NotebookDeploymentMode,
+    [Parameter(Mandatory = $true, Position = 5)]
+    [securestring]$RepoToken,
+    [Parameter(Mandatory = $true, Position = 5)]
+    [string]$RepoURL,
+    [Parameter(Mandatory = $true, Position = 6)]
+    [string]$RepoProvider,
+    [Parameter(Mandatory = $true, Position = 6)]
+    [string]$RepoDevBranch
+)
+
+
+if ($DeployDatabricksNotebooks -eq "true") 
+{
+#region begin Notebooks
+    #region begin Workspace
+    if ($NotebookDeploymentMode -eq "workspace" -or $NotebookDeploymentMode -eq "both") {
+        Write-Host "Uploading Notebooks" -ForegroundColor Cyan
+        $NotebookDirectories = Get-ChildItem $NotebookDirectory -Recurse -Directory
+        foreach($Directory in $NotebookDirectories) {
+            $WorkspacePath = $Directory.FullName.Replace($NotebookDirectory.Replace("/","\"), "").Replace("\","/")
+            Write-Host "$Directory"
+            Write-Host "$NotebookDirectory"
+            Write-Host "Uploading local notebooks from $Directory to /Framework$WorkspacePath"
+            New-DatabricksWorkspaceFolder -BaseURI $URIBase -Token $Token -Path "/Framework$WorkspacePath"
+            Import-NotebookDirectory -BaseURI $URIBase -Token $Token -LocalPath $Directory.FullName -WorkspacePath "/Framework$WorkspacePath"
+        }
+    }
+    #endregion
+    
+    region begin Repos
+    if ($NotebookDeploymentMode -eq "repos" -or $NotebookDeploymentMode -eq "both") {
+        New-DatabricksWorkspaceFolder -BaseURI $URIBase -Token $Token -Path "/Repos/Development"
+        New-DatabricksWorkspaceFolder -BaseURI $URIBase -Token $Token -Path "/Repos/Production"
+        # try {
+            New-DatabricksRepo -BaseURI $URIBase -Token $RepoToken -URL $RepoURL -Provider $RepoProvider -Path "/Repos/Production/nintex"
+        # } catch {"Repo creation timed out, sleeping for 60 seconds to allow for git operation to complete."} finally {Start-Sleep(60)}
+        # try {
+            New-DatabricksRepo -BaseURI $URIBase -Token $RepoToken -URL $RepoURL -Provider $RepoProvider -Path "/Repos/Development/nintex"
+        # } catch {"Repo creation timed out, sleeping for 60 seconds to allow for git operation to complete."} finally {Start-Sleep(60)}
+        
+        $ProductionRepo = ((Get-DatabricksRepos -BaseURI $URIBase -Token $Token -PathPrefix "/Repos/Production/nintex").Content | ConvertFrom-Json).repos
+        $DevRepo = ((Get-DatabricksRepos -BaseURI $URIBase -Token $Token -PathPrefix "/Repos/Development/nintex").Content | ConvertFrom-Json).repos
+    
+        # try {
+            Update-DatabricksRepo -BaseURI $URIBase -Token $RepoToken -RepoId $DevRepo.Id -Branch $RepoDevBranch
+        # } catch {"Repo update timed out, sleeping for 60 seconds to allow for git operation to complete."} finally {Start-Sleep(60)}
+        # try {
+            Update-DatabricksRepo -BaseURI $URIBase -Token $RepoToken -RepoId $ProductionRepo.Id -Branch "main"
+        # } catch {"Repo update timed out, sleeping for 60 seconds to allow for git operation to complete."} finally {Start-Sleep(60)}
+    }    
+
+    #endregion
+#endregion
+
+#region begin Permissions
+    $Users = @()
+    $Groups = @("Readers")
+    $ServicePrincipals = @()
+    $ReadersAccessControlList = New-AccessControlList -Users $Users -Groups $Groups -ServicePrincipals $ServicePrincipals -PermissionLevel "CAN_RUN" | ConvertTo-Json
+
+    $Users = @()
+    $Groups = @("Contributors")
+    $ServicePrincipals = @()
+    $ContributorsAccessControlList = New-AccessControlList -Users $Users -Groups $Groups -ServicePrincipals $ServicePrincipals -PermissionLevel "CAN_EDIT" | ConvertTo-Json
+
+    #region begin Workspace Permissions 
+    if ($NotebookDeploymentMode -eq "workspace" -or $NotebookDeploymentMode -eq "both") {
+        $FrameworkDirectoryId = (((Get-DatabricksWorkbookDirectoryContents -BaseURI $URIBase -Token $Token -NotebookDirectory "/").Content | ConvertFrom-Json).objects | Where-Object {$_.path -eq "/Framework"}).object_id
+        Update-DirectoryPermissions -BaseURI $URIBase -Token $Token -DirectoryId $FrameworkDirectoryId -AccessControlList $ReadersAccessControlList
+        Update-DirectoryPermissions -BaseURI $URIBase -Token $Token -DirectoryId $FrameworkDirectoryId -AccessControlList $ContributorsAccessControlList
+    }
+    #endregion
+
+    #region begin Repo Permissions
+    if ($NotebookDeploymentMode -eq "repos" -or $NotebookDeploymentMode -eq "both") {
+        $DevRepoWorkspaceId = (((Get-DatabricksWorkbookDirectoryContents -BaseURI $URIBase -Token $Token -NotebookDirectory "/Repos").Content | ConvertFrom-Json).objects | Where-Object {$_.path -eq "/Repos/Development"}).object_id
+        $ProdRepoWorkspaceId = (((Get-DatabricksWorkbookDirectoryContents -BaseURI $URIBase -Token $Token -NotebookDirectory "/Repos").Content | ConvertFrom-Json).objects | Where-Object {$_.path -eq "/Repos/Production"}).object_id
+    
+        Update-DirectoryPermissions -BaseURI $URIBase -Token $Token -DirectoryId $DevRepoWorkspaceId -AccessControlList $ReadersAccessControlList
+        Update-DirectoryPermissions -BaseURI $URIBase -Token $Token -DirectoryId $DevRepoWorkspaceId -AccessControlList $ContributorsAccessControlList
+
+        Update-DirectoryPermissions -BaseURI $URIBase -Token $Token -DirectoryId $ProdRepoWorkspaceId -AccessControlList $ReadersAccessControlList
+        Update-DirectoryPermissions -BaseURI $URIBase -Token $Token -DirectoryId $ProdRepoWorkspaceId -AccessControlList $ContributorsAccessControlList
+    }
+    #endregion
+
+#endregion
+
+}
+ 
+
+
+

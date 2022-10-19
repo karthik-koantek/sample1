@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>Accelerator</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{d60e57bf-aae6-490e-8946-2a93c336308d}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>Accelerator</RootNamespace>
+    <AssemblyName>Accelerator</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(NetCoreBuild)' != 'true' AND '$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Tables" />
+    <Folder Include="Stored Procedures" />
+    <Folder Include="PublishXML" />
+    <Folder Include="Types" />
+    <Folder Include="Scripts" />
+    <Folder Include="Functions" />
+    <Folder Include="Schemas" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\Project.sql" />
+    <Build Include="Tables\System.sql" />
+    <Build Include="Tables\Stage.sql" />
+    <Build Include="Tables\Job.sql" />
+    <Build Include="Tables\Step.sql" />
+    <Build Include="Tables\Parameter.sql" />
+    <Build Include="Stored Procedures\InsertProject.sql" />
+    <Build Include="Stored Procedures\InsertSystem.sql" />
+    <Build Include="Stored Procedures\InsertStage.sql" />
+    <Build Include="Stored Procedures\InsertJob.sql" />
+    <Build Include="Stored Procedures\InsertStep.sql" />
+    <Build Include="Stored Procedures\HydrateBatchSQL.sql" />
+    <Build Include="Types\Parameters.sql" />
+    <Build Include="Stored Procedures\InsertParameters.sql" />
+    <Build Include="Stored Procedures\HydrateCosmos.sql" />
+    <Build Include="Stored Procedures\HydrateBatchFile.sql" />
+    <Build Include="Stored Procedures\TruncateHydration.sql" />
+    <Build Include="Tables\LogStatus.sql" />
+    <Build Include="Tables\ProjectLog.sql" />
+    <Build Include="Stored Procedures\LogProjectStart.sql" />
+    <Build Include="Stored Procedures\LogProjectEnd.sql" />
+    <Build Include="Stored Procedures\LogProjectError.sql" />
+    <Build Include="Stored Procedures\ResetProject.sql" />
+    <Build Include="Tables\SystemLog.sql" />
+    <Build Include="Stored Procedures\LogSystemStart.sql" />
+    <Build Include="Stored Procedures\LogSystemEnd.sql" />
+    <Build Include="Stored Procedures\LogSystemError.sql" />
+    <Build Include="Stored Procedures\ResetSystem.sql" />
+    <Build Include="Tables\StageLog.sql" />
+    <Build Include="Stored Procedures\LogStageStart.sql" />
+    <Build Include="Stored Procedures\LogStageEnd.sql" />
+    <Build Include="Stored Procedures\LogStageError.sql" />
+    <Build Include="Stored Procedures\ResetStage.sql" />
+    <Build Include="Tables\JobLog.sql" />
+    <Build Include="Stored Procedures\LogJobStart.sql" />
+    <Build Include="Stored Procedures\LogJobEnd.sql" />
+    <Build Include="Stored Procedures\LogJobError.sql" />
+    <Build Include="Stored Procedures\ResetJob.sql" />
+    <Build Include="Tables\StepLog.sql" />
+    <Build Include="Stored Procedures\LogStepStart.sql" />
+    <Build Include="Stored Procedures\LogStepEnd.sql" />
+    <Build Include="Stored Procedures\LogStepError.sql" />
+    <Build Include="Tables\NotebookLog.sql" />
+    <Build Include="Stored Procedures\LogNotebookStart.sql" />
+    <Build Include="Stored Procedures\LogNotebookEnd.sql" />
+    <Build Include="Stored Procedures\LogNotebookError.sql" />
+    <Build Include="Stored Procedures\GetProjectRuns.sql" />
+    <Build Include="Stored Procedures\GetProjectRunDetail.sql">
+      <SuppressTSqlWarnings>71502</SuppressTSqlWarnings>
+    </Build>
+    <None Include="Scripts\GrantRolePermissionsToADGroups.sql" />
+    <None Include="Scripts\SourceSystemPrimaryKeyColumns.sql" />
+    <None Include="Scripts\SourceSystemRowCounts.sql" />
+    <Build Include="Stored Procedures\HydrateAppInsights.sql" />
+    <Build Include="Stored Procedures\HydrateStreamingNotebook.sql" />
+    <Build Include="Stored Procedures\HydrateGenericNotebook.sql" />
+    <Build Include="Tables\WindowedExtraction.sql" />
+    <Build Include="Stored Procedures\GetProjectConfiguration.sql">
+      <SuppressTSqlWarnings>71502</SuppressTSqlWarnings>
+    </Build>
+    <Build Include="Functions\GenerateNumbers.sql" />
+    <Build Include="Functions\GenerateDates.sql" />
+    <Build Include="Stored Procedures\InsertWindowedExtraction.sql">
+      <SuppressTSqlWarnings>71502</SuppressTSqlWarnings>
+    </Build>
+    <Build Include="Functions\StepKey.sql" />
+    <Build Include="Functions\GetWindow.sql" />
+    <Build Include="Stored Procedures\HydrateSparkTableMaintenance.sql" />
+    <Build Include="Stored Procedures\HydrateGoldZonePowerBI.sql" />
+    <Build Include="Stored Procedures\HydratePresentationZone.sql" />
+    <Build Include="Stored Procedures\RunProject.sql" />
+    <Build Include="Stored Procedures\GetProject.sql" />
+    <Build Include="Stored Procedures\GetSystem.sql" />
+    <Build Include="Stored Procedures\GetStage.sql" />
+    <Build Include="Stored Procedures\GetJob.sql" />
+    <Build Include="Stored Procedures\GetParameters.sql" />
+    <Build Include="Stored Procedures\HydrateADFBatchFile.sql" />
+    <Build Include="Stored Procedures\HydrateMLExperimentTraining.sql" />
+    <Build Include="Stored Procedures\HydrateMLBatchInference.sql" />
+    <Build Include="Stored Procedures\HydrateMLStreamingInference.sql" />
+    <Build Include="Stored Procedures\HydrateDataCatalog.sql" />
+    <Build Include="Stored Procedures\HydrateGoldZone.sql" />
+    <Build Include="Stored Procedures\HydrateClone.sql" />
+    <Build Include="Tables\Validation.sql" />
+    <Build Include="Tables\ValidationLog.sql" />
+    <Build Include="Tables\ValidationStatus.sql" />
+    <Build Include="Tables\DataLakeZone.sql" />
+    <Build Include="Tables\DatabaseCatalog.sql" />
+    <Build Include="Tables\ValidationObjectType.sql" />
+    <Build Include="Stored Procedures\HydratePipelineValidation.sql" />
+    <Build Include="Stored Procedures\HydrateValidationTest.sql" />
+    <Build Include="Stored Procedures\LogValidationLog.sql" />
+    <Build Include="Stored Procedures\HydratePlatinumZone.sql" />
+    <Build Include="Stored Procedures\GetValidationConfiguration.sql">
+      <SuppressTSqlWarnings>71502</SuppressTSqlWarnings>
+    </Build>
+    <Build Include="Stored Procedures\GetValidationRunDetail.sql">
+      <SuppressTSqlWarnings>71502</SuppressTSqlWarnings>
+    </Build>
+    <Build Include="Stored Procedures\HydrateDataQualityAssessment.sql" />
+    <Build Include="Tables\DataQualityValidationResult.sql" />
+    <Build Include="Tables\DataQualityValidationResultDetail.sql" />
+    <Build Include="Schemas\staging.sql" />
+    <Build Include="Stored Procedures\staging.LoadDataQualityValidationResult.sql">
+      <SuppressTSqlWarnings>71502</SuppressTSqlWarnings>
+    </Build>
+    <Build Include="Stored Procedures\staging.LoadDataQualityValidationResultDetail.sql">
+      <SuppressTSqlWarnings>71502</SuppressTSqlWarnings>
+    </Build>
+    <Build Include="Stored Procedures\GetDataQualityValidationSummary.sql">
+      <SuppressTSqlWarnings>71502</SuppressTSqlWarnings>
+    </Build>
+    <Build Include="Stored Procedures\GetDataQualityValidationDetail.sql">
+      <SuppressTSqlWarnings>71502</SuppressTSqlWarnings>
+    </Build>
+    <Build Include="Stored Procedures\HydrateADFSQL.sql" />
+    <Build Include="Stored Procedures\HydrateADFSQLMetadataQueries.sql" />
+    <Build Include="Stored Procedures\HydrateSpiderMetadataForSQLSource.sql" />
+    <Build Include="Stored Procedures\HydrateEDANotebook.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\LogStatus.sql" />
+    <None Include="Scripts\ValidationStatus.sql" />
+    <None Include="Scripts\DataLakeZone.sql" />
+    <None Include="Scripts\DatabaseCatalog.sql" />
+    <None Include="Scripts\ValidationObjectType.sql" />
+    <None Include="PublishXML\Accelerator.DEV.publish.publish.xml" />
+    <None Include="PublishXML\Accelerator.PROD.publish.publish.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Scripts\Script.PostDeployment1.sql" />
+  </ItemGroup>
+  <Import Condition="'$(NetCoreBuild)' == 'true'" Project="$(NETCoreTargetsPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <PackageReference Condition="'$(NetCoreBuild)' == 'true'" Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+  <Target Name="BeforeBuild">
+    <Delete Files="$(BaseIntermediateOutputPath)\project.assets.json" />
+  </Target>
+</Project>

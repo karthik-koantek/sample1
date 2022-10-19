@@ -1,0 +1,60 @@
+##backend conf run 1time only
+# include:
+#   - 'state-conf/gitlab-ci.yml'
+stages:
+  - validate
+  - plan
+  - apply
+  - destroy
+image:
+  name: hashicorp/terraform:light
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+before_script:
+  
+  - rm -rf .terraform
+  - terraform --version
+  - export databricks_account_id=${databricks_account_id}
+  - export databricks_account_password=${databricks_account_password}
+  - export databricks_account_username=${databricks_account_username}
+  - export AWS_ACCESS_KEY=${AWS_ACCESS_KEY_ID}
+  - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+  - terraform init -backend-config="access_key=${AWS_ACCESS_KEY_ID}" -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}" -backend-config="region=us-west-2"
+  
+  - apk add --no-cache python3 py3-pip
+  - pip install awscli
+  - pip install -U pip setuptools wheel
+  # - cd AzureDatabricks/FrameworkLibrary
+  # - python3 setup.py bdist_wheel
+  - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  - aws configure set region "us-west-2"
+  - aws sts get-caller-identity 
+validate:
+  stage: validate
+  script:
+    - terraform validate
+plan:
+  stage: plan
+  script:
+    - terraform plan -out "tfplan"
+  dependencies:
+    - validate
+  artifacts:
+    paths:
+      - tfplan
+apply:
+  stage: apply
+  script:
+    - terraform apply -input=false "tfplan"
+  dependencies:
+    - plan
+  when: manual
+destroy:
+  stage: destroy
+  script:
+    - terraform destroy --auto-approve
+  when: manual
+
+  

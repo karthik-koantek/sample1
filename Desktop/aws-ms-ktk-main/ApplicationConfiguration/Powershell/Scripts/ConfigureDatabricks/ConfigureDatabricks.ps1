@@ -1,0 +1,165 @@
+param
+(
+    [Parameter(Mandatory = $true, Position = 0)]
+    [string]$SubscriptionId,
+    [Parameter(Mandatory = $true, Position = 1)]
+    [string]$ResourceGroupName,
+    [Parameter(Mandatory = $true, Position = 2)]
+    [string]$Region,
+    [Parameter(Mandatory = $true, Position = 3)]
+    [string]$BearerToken,
+    [Parameter(Mandatory = $true, Position = 4)]
+    [string]$ModulesDirectory,
+    [Parameter(Mandatory = $true, Position = 5)]
+    [string]$InitScriptPath,
+    [Parameter(Mandatory = $true, Position = 6)]
+    [string]$FrameworkDBAdminPwd,
+    [Parameter(Mandatory = $true, Position = 7)]
+    [string]$NotebookDirectory,
+    [Parameter(Mandatory = $false, Position = 8)]
+    [string]$SanctionedDatabaseName = "",
+    [Parameter(Mandatory = $true, Position = 9)]
+    [string]$SparkVersion,
+    [Parameter(Mandatory = $true, Position = 10)]
+    [string]$PhotonVersion,
+    [Parameter(Mandatory = $true, Position = 11)]
+    [string]$MLRuntimeSparkVersion,
+    [Parameter(Mandatory = $true, Position = 12)]
+    [string]$NodeType,
+    [Parameter(Mandatory = $true, Position = 13)]
+    [string]$DeltaEngineNodeType,
+    [Parameter(Mandatory = $true, Position = 14)]
+    [string]$PrimaryDomain,
+    [Parameter(Mandatory = $true, Position = 15)]
+    [string]$Environment,
+    [Parameter(Mandatory = $true, Position = 16)]
+    [string]$EmailNotification,
+    [Parameter(Mandatory = $false, Position = 17)]
+    [string]$SchemasDirectory = "",
+    [Parameter(Mandatory = $false, Position = 18)]
+    [string]$DQRulesDirectory = "",
+    [Parameter(Mandatory = $false, Position = 19)]
+    [string]$DataFactoryName = "",
+    [Parameter(Mandatory = $false, Position = 20)]
+    [string]$DataFactoryClientId = "",
+    [Parameter(Mandatory = $false, Position = 21)]
+    [string]$DataFactoryClientSecret = "",
+    [Parameter(Mandatory = $false, Position = 22)]
+    [string]$TenantId = "",
+    [Parameter(Mandatory = $true, Position = 23)]
+    [string]$FrameworkDBName,
+    [Parameter(Mandatory = $false, Position = 24)]
+    [string]$DeployDatabricksClusters = "false",
+    [Parameter(Mandatory = $true, Position = 25)]
+    [string]$DeployDatabricksNotebooks = "true",
+    [Parameter(Mandatory = $false, Position = 26)]
+    [string]$NotebookDeploymentMode = "workspace",
+    [Parameter(Mandatory = $false, Position = 27)]
+    [string]$RunDataQualityNotebooks = "false",
+    [Parameter(Mandatory = $false, Position = 28)]
+    [string]$DeployJobs = "true",
+    [Parameter(Mandatory = $false, Position = 29)]
+    [string]$DeployUATTesting = "false",
+    [Parameter(Mandatory = $true, Position = 30)]
+    [string]$ScriptsDirectory,
+    [Parameter(Mandatory = $false, Position = 31)]
+    [string]$RepoToken = "",
+    [Parameter(Mandatory = $false, Position = 32)]
+    [string]$RepoURL = "",
+    [Parameter(Mandatory = $false, Position = 33)]
+    [string]$RepoProvider = "azureDevOpsServices",
+    [Parameter(Mandatory = $false, Position = 34)]
+    [string]$RepoDevBranch = "",
+    [Parameter(Mandatory = $false, Position = 35)]
+    [string]$DeploySQLEndpoints = "true"
+)
+
+Set-AzContext -SubscriptionId $SubscriptionId
+Install-Module -Name Az.Databricks -Force
+
+$DatabricksWorkspace = Get-AzDatabricksWorkspace -ResourceGroupName $ResourceGroupName
+[string]$DatabricksWorkspaceUrl = $DatabricksWorkspace.Url
+[string]$DatabricksWorkspaceId = $DatabricksWorkspace.WorkspaceId
+[string]$Machine = "https://$DatabricksWorkspaceUrl"
+[string]$APIVersion = "2.0"
+[string]$URIBase = "$Machine/api/$APIVersion"
+$Token = ConvertTo-SecureString -String $BearerToken -AsPlainText -Force
+if ($RepoToken -eq "") {
+    $RepoToken = $BearerToken 
+}
+$RepoTokenSecure = ConvertTo-SecureString -String $RepoToken -AsPlainText -Force
+
+. $ModulesDirectory\Databricks\DatabricksGroups.ps1
+. $ModulesDirectory\Databricks\DatabricksClusters.ps1
+. $ModulesDirectory\Databricks\DatabricksInstancePools.ps1
+. $ModulesDirectory\Databricks\DatabricksLibraries.ps1
+. $ModulesDirectory\Databricks\DatabricksJobs.ps1
+. $ModulesDirectory\Databricks\DatabricksSecrets.ps1
+. $ModulesDirectory\Databricks\DatabricksWorkspace.ps1
+. $ModulesDirectory\Databricks\DatabricksDBFS.ps1
+. $ModulesDirectory\Databricks\DatabricksDeltaLiveTables.ps1
+. $ModulesDirectory\Databricks\DatabricksRepos.ps1
+. $ModulesDirectory\Databricks\DatabricksPermissions.ps1
+. $ModulesDirectory\Databricks\DatabricksSQL.ps1
+
+. $ScriptsDirectory\ConfigureDatabricks\Teardown.ps1 -URIBase $URIBase -Token $Token -DeployDatabricksClusters $DeployDatabricksClusters -DeployJobs $DeployJobs 
+. $ScriptsDirectory\ConfigureDatabricks\UsersAndGroups.ps1 -URIBase $URIBase -Token $Token -ResourceGroupName $ResourceGroupName -PrimaryDomain $PrimaryDomain 
+. $ScriptsDirectory\ConfigureDatabricks\ReposAndNotebooks.ps1 -URIBase $URIBase -Token $Token -DeployDatabricksNotebooks $DeployDatabricksNotebooks -NotebookDirectory $NotebookDirectory -NotebookDeploymentMode $NotebookDeploymentMode -RepoToken $RepoTokenSecure -RepoURL $RepoURL -RepoProvider $RepoProvider -RepoDevBranch $RepoDevBranch
+. $ScriptsDirectory\ConfigureDatabricks\InstancePools.ps1 -URIBase $URIBase -Token $Token -SparkVersion $SparkVersion -PhotonVersion $PhotonVersion -MLRuntimeSparkVersion $MLRuntimeSparkVersion -NodeType $NodeType -DeltaEngineNodeType $DeltaEngineNodeType -DeployDatabricksClusters $DeployDatabricksClusters 
+. $ScriptsDirectory\ConfigureDatabricks\DBFSUploads.ps1 -URIBase $URIBase -Token $Token -InitScriptPath $InitScriptPath -SchemasDirectory $SchemasDirectory -DQRulesDirectory $DQRulesDirectory -DeployDatabricksClusters $DeployDatabricksClusters -DeployDatabricksNotebooks $DeployDatabricksNotebooks -RunDataQualityNotebooks $RunDataQualityNotebooks -DeployJobs $DeployJobs 
+. $ScriptsDirectory\ConfigureDatabricks\InitScripts.ps1 -URIBase $URIBase -Token $Token -SparkVersion $SparkVersion -NodeType $NodeType -DeployDatabricksClusters $DeployDatabricksClusters
+
+#region begin Global Variables 
+#Init Script
+$InitScriptDBFSPath = "/databricks/pyodbc.sh"
+#Instance Pools
+$InstancePoolId = Get-InstancePool -BaseURI $URIBase -Token $Token -InstancePoolName "Default"
+$DeltaEngineInstancePoolId = Get-InstancePool -BaseURI $URIBase -Token $Token -InstancePoolName "Photon" 
+$HighConcurrencyInstancePoolId = Get-InstancePool -BaseURI $URIBase -Token $Token -InstancePoolName "HighConcurrency"
+#Python Wheel 
+$WheelFolderPath = $ModulesDirectory.Replace("/ApplicationConfiguration/Powershell/Modules", "/python-wheel/*")
+$LocalLibraryPath = @($WheelFolderPath | Get-ChildItem -Include *.whl)[0]
+$LibraryFileName = Split-Path $LocalLibraryPath -leaf
+$WheelLibraryPath = "dbfs:/FileStore/jars/"+$LibraryFileName
+#region begin Get Data Lake Storage Details
+$StorageAccounts = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName
+$TransientStorageAccount = $StorageAccounts | Where-Object {$_.StorageAccountName -like "*blob*"}
+$BronzeStorageAccount = $StorageAccounts | Where-Object {$_.StorageAccountName -like "*adlsb"}
+$SilverGoldStorageAccount = $StorageAccounts | Where-Object {$_.StorageAccountName -like "*adlssg"}
+$SandboxStorageAccount = $StorageAccounts | Where-Object {$_.StorageAccountName -like "*adlssb"}
+#$LegacyStorageAccount = $StorageAccounts | Where-Object {$_.StorageAccountName -like "mwtonrampadlsg2*"}
+$BronzeStorageAccountFSName = "spark.hadoop.fs.azure.account.key.{0}.dfs.core.windows.net" -f $BronzeStorageAccount.StorageAccountName
+$SilverGoldStorageAccountFSName = "spark.hadoop.fs.azure.account.key.{0}.dfs.core.windows.net" -f $SilverGoldStorageAccount.StorageAccountName
+$SandboxStorageAccountFSName = "spark.hadoop.fs.azure.account.key.{0}.dfs.core.windows.net" -f $SandboxStorageAccount.StorageAccountName
+#$LegacyStorageAccountFSName = "spark.hadoop.fs.azure.account.key.{0}.dfs.core.windows.net" -f $LegacyStorageAccount.StorageAccountName
+$TransientStorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $ResourceGroupName -Name $TransientStorageAccount.StorageAccountName).Value[0]
+$BronzeStorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $ResourceGroupName -Name $BronzeStorageAccount.StorageAccountName).Value[0]
+$SilverGoldStorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $ResourceGroupName -Name $SilverGoldStorageAccount.StorageAccountName).Value[0]
+$SandboxStorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $ResourceGroupName -Name $SandboxStorageAccount.StorageAccountName).Value[0]
+#$LegacyStorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $ResourceGroupName -Name $LegacyStorageAccount.StorageAccountName).Value[0]
+$StorageAccountHash = @{
+    $BronzeStorageAccountFSName=$BronzeStorageAccountKey
+    $SilverGoldStorageAccountFSName=$SilverGoldStorageAccountKey
+    $SandboxStorageAccountFSName=$SandboxStorageAccountKey
+    #$LegacyStorageAccountFSName=$LegacyStorageAccountKey
+}
+$StorageAccountHashUsingSecrets = @{
+    $BronzeStorageAccountFSName="{{secrets/internal/BronzeStorageAccountKey}}"
+    $SilverGoldStorageAccountFSName="{{secrets/internal/SilverGoldStorageAccountKey}}"
+    $SandboxStorageAccountFSName="{{secrets/internal/SandboxStorageAccountKey}}"
+}
+#endregion
+#SQL Servers
+$SQLServers = Get-AzSqlServer -ResourceGroupName $ResourceGroupName
+#Groups
+$AdminGroupName = $ResourceGroupName + "DataLakeOwners@$PrimaryDomain"
+$ContributorGroupName = $ResourceGroupName + "DataLakeContributors@$PrimaryDomain"
+$ReaderGroupName = $ResourceGroupName + "DataLakeReaders@$PrimaryDomain"
+#endregion 
+
+. $ScriptsDirectory\ConfigureDatabricks\Clusters.ps1 -URIBase $URIBase -Token $Token -SparkVersion $SparkVersion -MLRuntimeSparkVersion $MLRuntimeSparkVersion -NodeType $NodeType -DeltaEngineNodeType $DeltaEngineNodeType -EmailNotification $EmailNotification -DeployDatabricksClusters $DeployDatabricksClusters -InitScriptDBFSPath $InitScriptDBFSPath -InstancePoolId $InstancePoolId -DeltaEngineInstancePoolId $DeltaEngineInstancePoolId -HighConcurrencyInstancePoolId $HighConcurrencyInstancePoolId -StorageAccountHash $StorageAccountHash -StorageAccountHashUsingSecrets $StorageAccountHashUsingSecrets -WheelLibraryPath $WheelLibraryPath
+. $ScriptsDirectory\ConfigureDatabricks\SQLEndpoints.ps1 -URIBase $URIBase -Token $Token -StorageAccountHashUsingSecrets $StorageAccountHashUsingSecrets -DeploySQLEndpoints $DeploySQLEndpoints -TenantId $TenantId 
+. $ScriptsDirectory\ConfigureDatabricks\SecretsAndScopes.ps1 -URIBase $URIBase -Token $Token -FrameworkDBAdminPwd $FrameworkDBAdminPwd -SanctionedDatabaseName $SanctionedDatabaseName -DataFactoryName $DataFactoryName -DataFactoryClientId $DataFactoryClientId -DataFactoryClientSecret $DataFactoryClientSecret -TenantId $TenantId -FrameworkDBName $FrameworkDBName -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -TransientStorageAccountName $TransientStorageAccount.StorageAccountName -TransientStorageAccountKey $TransientStorageAccountKey -BronzeStorageAccountName $BronzeStorageAccount.StorageAccountName -BronzeStorageAccountKey $BronzeStorageAccountKey -SilverGoldStorageAccountName $SilverGoldStorageAccount.StorageAccountName -SilverGoldStorageAccountKey $SilverGoldStorageAccountKey -SandboxStorageAccountName $SandboxStorageAccount.StorageAccountName -SandboxStorageAccountKey $SandboxStorageAccountKey -FrameworkDBFullyQualifiedServerName $SQLServers.FullyQualifiedDomainName -FrameworkDBAdministratorLogin $SQLServers.SqlAdministratorLogin -AdminGroupName $AdminGroupName -ContributorGroupName $ContributorGroupName -ReaderGroupName $ReaderGroupName -BearerToken $BearerToken -WorkspaceId $DatabricksWorkspaceId -WorkspaceUrl $DatabricksWorkspaceUrl
+#. $ScriptsDirectory\ConfigureDatabricks\DLTJobs.ps1 -URIBase $URIBase -Token $Token -SparkVersion $SparkVersion -MLRuntimeSparkVersion $MLRuntimeSparkVersion -NodeType $NodeType -DeltaEngineNodeType $DeltaEngineNodeType -EmailNotification $EmailNotification -DeployJobs $DeployJobs -DeployUATTesting $DeployUATTesting -WheelLibraryPath $WheelLibraryPath -InitScriptDBFSPath $InitScriptDBFSPath -StorageAccountHash $StorageAccountHash -StorageAccountHashUsingSecrets $StorageAccountHashUsingSecrets -InstancePoolId $InstancePoolId -DeltaEngineInstancePoolId $DeltaEngineInstancePoolId -HighConcurrencyInstancePoolId $HighConcurrencyInstancePoolId -Environment $Environment
+. $ScriptsDirectory\ConfigureDatabricks\Jobs.ps1 -URIBase $URIBase -Token $Token -SparkVersion $SparkVersion -MLRuntimeSparkVersion $MLRuntimeSparkVersion -NodeType $NodeType -DeltaEngineNodeType $DeltaEngineNodeType -EmailNotification $EmailNotification -DeployJobs $DeployJobs -DeployUATTesting $DeployUATTesting -WheelLibraryPath $WheelLibraryPath -InitScriptDBFSPath $InitScriptDBFSPath -StorageAccountHash $StorageAccountHash -StorageAccountHashUsingSecrets $StorageAccountHashUsingSecrets -InstancePoolId $InstancePoolId -DeltaEngineInstancePoolId $DeltaEngineInstancePoolId -HighConcurrencyInstancePoolId $HighConcurrencyInstancePoolId -Environment $Environment
+. $ScriptsDirectory\ConfigureDatabricks\RunDataQualityNotebook.ps1 -URIBase $URIBase -Token $Token -DQRulesDirectory $DQRulesDirectory -RunDataQualityNotebooks $RunDataQualityNotebooks
